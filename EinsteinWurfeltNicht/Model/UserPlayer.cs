@@ -30,7 +30,8 @@ namespace EinsteinWurfeltNicht.Model
 
         public void SetChessPos(int chessNum, int posId)
         {
-
+            (chesses[chessNum] as Chess).posId = posId;
+            Notify();
         }
 
         public void Attatch(IModelObserver observer)
