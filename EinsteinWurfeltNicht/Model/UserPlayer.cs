@@ -25,12 +25,18 @@ namespace EinsteinWurfeltNicht.Model
             chesses = new ArrayList();
             int[] numPosHash = new int[CHESS_NUM] { 14, 18, 19, 22, 23, 24 };
             for (int i = 0; i < CHESS_NUM; i++)
-                chesses.Add(new Chess(ChessOwner.PLAYER, numPosHash[i], i));
+                chesses.Add(new Chess(ChessOwner.PLAYER2, numPosHash[i], i));
         }
 
         public void SetChessPos(int chessNum, int posId)
         {
             (chesses[chessNum] as Chess).posId = posId;
+            Notify();
+        }
+
+        public void SetChessEliminated(int chessNum)
+        {
+            (chesses[chessNum] as Chess).state = ChessState.ELIMINATED;
             Notify();
         }
 

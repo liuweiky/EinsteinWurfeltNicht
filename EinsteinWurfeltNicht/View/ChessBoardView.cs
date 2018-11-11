@@ -17,11 +17,14 @@ namespace EinsteinWurfeltNicht.View
         EwnController mainController;
         private IPlayer player1, player2;
 
+        public ChessOwner[,] chessBoardHash;
+
         public ChessBoardView(EwnController controller, int height, int width)
         {
             this.Height = height;
             this.Width = width;
             mainController = controller;
+            chessBoardHash = new ChessOwner[CHESS_BOARD_SIZE, CHESS_BOARD_SIZE];
             InitializeComponent();
         }
 
@@ -66,7 +69,11 @@ namespace EinsteinWurfeltNicht.View
                 foreach (Object o in player1.Chesses)
                 {
                     Chess c = o as Chess;
-                    SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);
+                    if (c.state == ChessState.ALIVE)
+                    {
+                        chessBoardHash[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE] = ChessOwner.PLAYER1;
+                        SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);
+                    }
                 }
             }
             if (player2 != null)
@@ -74,7 +81,11 @@ namespace EinsteinWurfeltNicht.View
                 foreach (Object o in player2.Chesses)
                 {
                     Chess c = o as Chess;
-                    SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);
+                    if (c.state == ChessState.ALIVE)
+                    {
+                        chessBoardHash[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE] = ChessOwner.PLAYER2;
+                        SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);
+                    }
                 }
             }
         }
@@ -89,6 +100,7 @@ namespace EinsteinWurfeltNicht.View
                     chessBoardLattices[i, j].BackColor = Color.White;
                     chessBoardLattices[i, j].Font = new Font("宋体", 24);
                     chessBoardLattices[i, j].Text = "";
+                    chessBoardHash[i, j] = ChessOwner.EMPTY;
                 }
             }
         }
@@ -96,15 +108,20 @@ namespace EinsteinWurfeltNicht.View
         private void SetButtonStyle(Button b, Chess c)
         {
             b.Text = c.chessNum.ToString();
+            if (c.state == ChessState.ELIMINATED)
+            {
+                //b.BackColor = Color.White;
+                return;
+            }
             switch(c.owner)
             {
                 case ChessOwner.EMPTY:
                     b.BackColor = Color.White;
                     break;
-                case ChessOwner.AI:
+                case ChessOwner.PLAYER1:
                     b.BackColor = Color.Blue;
                     break;
-                case ChessOwner.PLAYER:
+                case ChessOwner.PLAYER2:
                     b.BackColor = Color.Red;
                     break;
             }

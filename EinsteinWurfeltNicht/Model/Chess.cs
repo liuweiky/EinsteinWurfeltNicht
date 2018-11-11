@@ -8,7 +8,7 @@ using EinsteinWurfeltNicht.View;
 
 namespace EinsteinWurfeltNicht.Model
 {
-    enum ChessOwner {AI, PLAYER, EMPTY};
+    public enum ChessOwner {PLAYER1, PLAYER2, EMPTY};
     enum ChessState {ELIMINATED, ALIVE}
     class Chess
     {

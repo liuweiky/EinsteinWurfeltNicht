@@ -20,7 +20,6 @@ namespace EinsteinWurfeltNicht
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm(mainController));
-            mainController.Start();
         }
     }
 }

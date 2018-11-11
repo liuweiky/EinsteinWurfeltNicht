@@ -12,5 +12,6 @@ namespace EinsteinWurfeltNicht.Model
         ArrayList Chesses { get;}
 
         void SetChessPos(int chessNum, int posId);
+        void SetChessEliminated(int chessNum);
     }
 }
