@@ -49,7 +49,7 @@ namespace EinsteinWurfeltNicht.Controller
 
             if (player == player1)
             {
-                if (m < ChessBoardView.CHESS_BOARD_SIZE - 1 && 
+                /*if (m < ChessBoardView.CHESS_BOARD_SIZE - 1 && 
                     (chessBoardView.chessBoardHash[m + 1, n] == ChessOwner.PLAYER2 ||
                     chessBoardView.chessBoardHash[m + 1, n] == ChessOwner.EMPTY))
                     arrayList.Add((m + 1) * ChessBoardView.CHESS_BOARD_SIZE + n);
@@ -61,10 +61,29 @@ namespace EinsteinWurfeltNicht.Controller
                     n < ChessBoardView.CHESS_BOARD_SIZE - 1 && 
                     (chessBoardView.chessBoardHash[m + 1, n + 1] == ChessOwner.PLAYER2 ||
                     chessBoardView.chessBoardHash[m + 1, n + 1] == ChessOwner.EMPTY))
-                    arrayList.Add((m + 1) * ChessBoardView.CHESS_BOARD_SIZE + n + 1);
+                    arrayList.Add((m + 1) * ChessBoardView.CHESS_BOARD_SIZE + n + 1);*/
+                /*if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - 1)
+                    arrayList.Add(curPos + 1);
+                if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - ChessBoardView.CHESS_BOARD_SIZE)
+                    arrayList.Add(curPos + ChessBoardView.CHESS_BOARD_SIZE);
+                if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - ChessBoardView.CHESS_BOARD_SIZE - 1)
+                    arrayList.Add(curPos + ChessBoardView.CHESS_BOARD_SIZE + 1);*/
+                if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - ChessBoardView.CHESS_BOARD_SIZE - 1)
+                {
+                    arrayList.Add(curPos + ChessBoardView.CHESS_BOARD_SIZE + 1);
+                    arrayList.Add(curPos + ChessBoardView.CHESS_BOARD_SIZE);
+                    arrayList.Add(curPos + 1);
+                } else if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - ChessBoardView.CHESS_BOARD_SIZE)
+                {
+                    arrayList.Add(curPos + ChessBoardView.CHESS_BOARD_SIZE);
+                    arrayList.Add(curPos + 1);
+                } else if (curPos < ChessBoardView.CHESS_BOARD_SIZE * ChessBoardView.CHESS_BOARD_SIZE - 1)
+                {
+                    arrayList.Add(curPos + 1);
+                }
             } else
             {
-                if (m > 0 &&
+                /*if (m > 0 &&
                     (chessBoardView.chessBoardHash[m - 1, n] == ChessOwner.PLAYER1 ||
                     chessBoardView.chessBoardHash[m - 1, n] == ChessOwner.EMPTY))
                     arrayList.Add((m - 1) * ChessBoardView.CHESS_BOARD_SIZE + n);
@@ -76,7 +95,20 @@ namespace EinsteinWurfeltNicht.Controller
                     n > 0 &&
                     (chessBoardView.chessBoardHash[m - 1, n - 1] == ChessOwner.PLAYER1 ||
                     chessBoardView.chessBoardHash[m - 1, n - 1] == ChessOwner.EMPTY))
-                    arrayList.Add((m - 1) * ChessBoardView.CHESS_BOARD_SIZE + n - 1);
+                    arrayList.Add((m - 1) * ChessBoardView.CHESS_BOARD_SIZE + n - 1);*/
+                if (curPos >= ChessBoardView.CHESS_BOARD_SIZE + 1)
+                {
+                    arrayList.Add(curPos - ChessBoardView.CHESS_BOARD_SIZE - 1);
+                    arrayList.Add(curPos - ChessBoardView.CHESS_BOARD_SIZE);
+                    arrayList.Add(curPos - 1);
+                } else if (curPos >= ChessBoardView.CHESS_BOARD_SIZE)
+                {
+                    arrayList.Add(curPos - ChessBoardView.CHESS_BOARD_SIZE);
+                    arrayList.Add(curPos - 1);
+                } else if (curPos >= 1)
+                {
+                    arrayList.Add(curPos - 1);
+                }
             }
 
             return arrayList;
@@ -98,34 +130,45 @@ namespace EinsteinWurfeltNicht.Controller
                 player2Label.Visible = true;
             }
 
-            while ((p.Chesses[moveChessNum] as Chess).state == ChessState.ELIMINATED)
-                moveChessNum = DiceUtil.GetChessNum();
+            /*while ((p.Chesses[moveChessNum] as Chess).state == ChessState.ELIMINATED)
+                moveChessNum = DiceUtil.GetChessNum();*/
 
             diceLabel.Text = moveChessNum.ToString();
 
-            bool canMove = false;
+            ArrayList candidates = new ArrayList();
 
-            if (GetMoveRange(p, moveChessNum).Count > 0)
-                canMove = true;
+            if ((p.Chesses[moveChessNum] as Chess).state == ChessState.ALIVE)
+                candidates.Add(moveChessNum);
+            if (candidates.Count != 0)
+                return;
             int dis = 1;
-            while (!canMove)
+            while (candidates.Count == 0 && dis <= 5)
             {
-                if (GetMoveRange(p, moveChessNum + dis).Count > 0)
-                    canMove = true;
-                if (canMove)
-                {
-                    moveChessNum = moveChessNum + dis;
-                    break;
-                }
-                if (GetMoveRange(p, moveChessNum - dis).Count > 0)
-                        canMove = true;
-                if (canMove)
-                {
-                    moveChessNum = moveChessNum - dis;
-                    break;
-                }
+                if (moveChessNum + dis <= 5 && (p.Chesses[moveChessNum + dis] as Chess).state == ChessState.ALIVE)
+                    candidates.Add(moveChessNum + dis);
+                if (moveChessNum - dis >= 0 && (p.Chesses[moveChessNum - dis] as Chess).state == ChessState.ALIVE)
+                    candidates.Add(moveChessNum - dis);
                 dis++;
             }
+
+            if (candidates.Count == 0)
+                MessageBox.Show(p == player1 ? "Player2 Win" : "Player1 Win");
+            else if (candidates.Count == 2)
+            {
+                DialogResult dialogRes = MessageBox.Show("2 candidates(" + candidates[0].ToString() + ", " + candidates[1].ToString() + "). Select " + candidates[0].ToString() + " ？", "Select", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (dialogRes == DialogResult.Yes)
+                {
+                    moveChessNum = (int)candidates[0];
+                } else
+                {
+                    moveChessNum = (int)candidates[1];
+                }
+            } else if (candidates.Count == 1)
+            {
+                MessageBox.Show("Can only move " + (int)candidates[0] + ".");
+                moveChessNum = (int)candidates[0];
+            }
+
         }
 
         public bool MoveTo(int posId)
@@ -137,7 +180,14 @@ namespace EinsteinWurfeltNicht.Controller
                 MessageBox.Show("Cannot move here");
                 return false;
             }
-            
+
+            for (int i = 0; i < p.Chesses.Count; i++)
+                if ((p.Chesses[i] as Chess).posId == posId)
+                {
+                    p.SetChessEliminated(i);
+                    break;
+                }
+
             for (int i = 0; i < tp.Chesses.Count; i++)
                 if ((tp.Chesses[i] as Chess).posId == posId)
                 {

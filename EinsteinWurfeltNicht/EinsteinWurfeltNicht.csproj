@@ -60,6 +60,7 @@
     <Compile Include="Model\UserPlayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\Algorithm\Minimax.cs" />
     <Compile Include="Util\DiceUtil.cs" />
     <Compile Include="View\ChessBoardView.cs">
       <SubType>Component</SubType>
