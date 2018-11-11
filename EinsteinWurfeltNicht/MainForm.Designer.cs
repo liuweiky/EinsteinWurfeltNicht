@@ -1,6 +1,6 @@
 ﻿namespace EinsteinWurfeltNicht
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,13 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.chessPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.SuspendLayout();
+            // 
+            // chessPanel
+            // 
+            this.chessPanel.Location = new System.Drawing.Point(12, 12);
+            this.chessPanel.Name = "chessPanel";
+            this.chessPanel.Size = new System.Drawing.Size(650, 650);
+            this.chessPanel.TabIndex = 0;
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(1035, 674);
+            this.Controls.Add(this.chessPanel);
+            this.MaximizeBox = false;
+            this.Name = "MainForm";
+            this.Text = "MainForm";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.FlowLayoutPanel chessPanel;
     }
 }
 
