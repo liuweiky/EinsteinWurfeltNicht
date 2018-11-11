@@ -20,6 +20,11 @@ namespace EinsteinWurfeltNicht.View
         {
             this.Height = height;
             this.Width = width;
+            InitializeComponent();
+        }
+
+        private void InitializeComponent()
+        {
             chessBoardLattices = new Button[CHESS_BOARD_SIZE, CHESS_BOARD_SIZE];
             for (int i = 0; i < CHESS_BOARD_SIZE; i++)
             {
@@ -28,10 +33,23 @@ namespace EinsteinWurfeltNicht.View
                     chessBoardLattices[i, j] = new Button();
                     chessBoardLattices[i, j].Height = this.Height / CHESS_BOARD_SIZE - this.Margin.Vertical;
                     chessBoardLattices[i, j].Width = this.Width / CHESS_BOARD_SIZE - this.Margin.Horizontal;
+                    chessBoardLattices[i, j].Click += new System.EventHandler(OnButtonClick);
                     Controls.Add(chessBoardLattices[i, j]);
                 }
             }
             ResetLattices();
+        }
+
+        private void OnButtonClick(object sender, EventArgs args)
+        {
+            for (int i = 0; i < CHESS_BOARD_SIZE; i++)
+            {
+                for (int j = 0; j < CHESS_BOARD_SIZE; j++)
+                {
+                    if (sender == chessBoardLattices[i, j])
+                        MessageBox.Show("Button {" + (i * CHESS_BOARD_SIZE + j).ToString() + "} clicked");
+                }
+            }
         }
 
         public void SetPlayer1(IPlayer p)
