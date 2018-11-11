@@ -7,7 +7,7 @@ using EinsteinWurfeltNicht.Model;
 
 namespace EinsteinWurfeltNicht.View
 {
-    interface IModelObserver
+    public interface IModelObserver
     {
         void Update(IModelObservable observable);
     }

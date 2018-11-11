@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace EinsteinWurfeltNicht.Model
 {
-    abstract class IPlayer
+    public interface IPlayer : IModelObservable
     {
-        public const int CHESS_NUM = 6;
-        public ArrayList chesses;
-        protected int[] numPosHash;
+        ArrayList Chesses { get;}
+
+        void SetChessPos(int chessNum, int posId);
     }
 }

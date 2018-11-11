@@ -5,21 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EinsteinWurfeltNicht.Controller;
 using EinsteinWurfeltNicht.Model;
 
 namespace EinsteinWurfeltNicht.View
 {
-    class ChessBoardView : FlowLayoutPanel, IModelObserver
+    public class ChessBoardView : FlowLayoutPanel, IModelObserver
     {
         public const int CHESS_BOARD_SIZE = 5;
-        private Button[,] chessBoardLattices;
-
+        public Button[,] chessBoardLattices;
+        EwnController mainController;
         private IPlayer player1, player2;
 
-        public ChessBoardView(int height, int width)
+        public ChessBoardView(EwnController controller, int height, int width)
         {
             this.Height = height;
             this.Width = width;
+            mainController = controller;
             InitializeComponent();
         }
 
@@ -33,34 +35,26 @@ namespace EinsteinWurfeltNicht.View
                     chessBoardLattices[i, j] = new Button();
                     chessBoardLattices[i, j].Height = this.Height / CHESS_BOARD_SIZE - this.Margin.Vertical;
                     chessBoardLattices[i, j].Width = this.Width / CHESS_BOARD_SIZE - this.Margin.Horizontal;
-                    chessBoardLattices[i, j].Click += new System.EventHandler(OnButtonClick);
+                    chessBoardLattices[i, j].Click += mainController.chessButtonHandler;
                     Controls.Add(chessBoardLattices[i, j]);
                 }
             }
             ResetLattices();
         }
 
-        private void OnButtonClick(object sender, EventArgs args)
-        {
-            for (int i = 0; i < CHESS_BOARD_SIZE; i++)
-            {
-                for (int j = 0; j < CHESS_BOARD_SIZE; j++)
-                {
-                    if (sender == chessBoardLattices[i, j])
-                        MessageBox.Show("Button {" + (i * CHESS_BOARD_SIZE + j).ToString() + "} clicked");
-                }
-            }
-        }
+        
 
         public void SetPlayer1(IPlayer p)
         {
             player1 = p;
+            (player1 as IModelObservable).Attatch(this);
             Update(null);
         }
 
         public void SetPlayer2(IPlayer p)
         {
             player2 = p;
+            (player2 as IModelObservable).Attatch(this);
             Update(null);
         }
 
@@ -69,7 +63,7 @@ namespace EinsteinWurfeltNicht.View
             ResetLattices();
             if (player1 != null)
             {
-                foreach (Object o in player1.chesses)
+                foreach (Object o in player1.Chesses)
                 {
                     Chess c = o as Chess;
                     SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);
@@ -77,7 +71,7 @@ namespace EinsteinWurfeltNicht.View
             }
             if (player2 != null)
             {
-                foreach (Object o in player2.chesses)
+                foreach (Object o in player2.Chesses)
                 {
                     Chess c = o as Chess;
                     SetButtonStyle(chessBoardLattices[c.posId / CHESS_BOARD_SIZE, c.posId % CHESS_BOARD_SIZE], c);

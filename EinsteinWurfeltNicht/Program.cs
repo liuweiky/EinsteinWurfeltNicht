@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EinsteinWurfeltNicht.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,9 +15,12 @@ namespace EinsteinWurfeltNicht
         [STAThread]
         static void Main()
         {
+            EwnController mainController = new EwnController();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new MainForm(mainController));
+            mainController.Start();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EinsteinWurfeltNicht.Model;
+﻿using EinsteinWurfeltNicht.Controller;
+using EinsteinWurfeltNicht.Model;
 using EinsteinWurfeltNicht.View;
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,18 @@ namespace EinsteinWurfeltNicht
 {
     public partial class MainForm : Form
     {
-        ChessBoardView chessBoard;
-        IPlayer player1, player2;
-        public MainForm()
+        ChessBoardView chessBoardView;
+        EwnController mainController;
+
+        public MainForm(EwnController controller)
         {
             InitializeComponent();
-            chessBoard = new ChessBoardView(chessPanel.Height, chessPanel.Width);
-            chessPanel.Controls.Add(chessBoard);
-            player1 = new AiPlayer();
-            player2 = new UserPlayer();
-            chessBoard.SetPlayer1(player1);
-            chessBoard.SetPlayer2(player2);
+            mainController = controller;
+            chessBoardView = new ChessBoardView(controller, chessPanel.Height, chessPanel.Width);
+            mainController.chessBoardView = chessBoardView;
+            chessPanel.Controls.Add(chessBoardView);
+            chessBoardView.SetPlayer1(mainController.player1);
+            chessBoardView.SetPlayer2(mainController.player2);
         }
     }
 }

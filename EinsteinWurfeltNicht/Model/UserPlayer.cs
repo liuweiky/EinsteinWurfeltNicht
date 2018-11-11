@@ -8,17 +8,29 @@ using System.Threading.Tasks;
 
 namespace EinsteinWurfeltNicht.Model
 {
-    class UserPlayer : IPlayer, IModelObservable
+    public class UserPlayer : IPlayer
     {
+        const int CHESS_NUM = 6;
         ArrayList observers;
+
+        ArrayList chesses;
+        public ArrayList Chesses
+        {
+            get { return chesses; }
+        }
 
         public UserPlayer()
         {
             observers = new ArrayList();
             chesses = new ArrayList();
-            numPosHash = new int[CHESS_NUM] { 14, 18, 19, 22, 23, 24 };
+            int[] numPosHash = new int[CHESS_NUM] { 14, 18, 19, 22, 23, 24 };
             for (int i = 0; i < CHESS_NUM; i++)
                 chesses.Add(new Chess(ChessOwner.PLAYER, numPosHash[i], i));
+        }
+
+        public void SetChessPos(int chessNum, int posId)
+        {
+
         }
 
         public void Attatch(IModelObserver observer)
