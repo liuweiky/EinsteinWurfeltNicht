@@ -1,5 +1,6 @@
 ﻿using EinsteinWurfeltNicht.Model;
 using EinsteinWurfeltNicht.Util;
+using EinsteinWurfeltNicht.Util.Algorithm;
 using EinsteinWurfeltNicht.View;
 using System;
 using System.Collections;
@@ -140,7 +141,15 @@ namespace EinsteinWurfeltNicht.Controller
             if ((p.Chesses[moveChessNum] as Chess).state == ChessState.ALIVE)
                 candidates.Add(moveChessNum);
             if (candidates.Count != 0)
+            {
+                if (p == player1)
+                {
+                    Minimax mm = new Minimax(this);
+                    int pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
+                    Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
+                }
                 return;
+            }
             int dis = 1;
             while (candidates.Count == 0 && dis <= 5)
             {
@@ -168,7 +177,12 @@ namespace EinsteinWurfeltNicht.Controller
                 MessageBox.Show("Can only move " + (int)candidates[0] + ".");
                 moveChessNum = (int)candidates[0];
             }
-
+            if (p == player1)
+            {
+                Minimax mm = new Minimax(this);
+                int pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
+                Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
+            }
         }
 
         public bool MoveTo(int posId)

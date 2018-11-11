@@ -11,7 +11,7 @@ namespace EinsteinWurfeltNicht.Util
         static Random RANDOM;
         static DiceUtil()
         {
-            RANDOM = new Random(1);
+            RANDOM = new Random(6);
         }
         public static int GetChessNum()
         {
