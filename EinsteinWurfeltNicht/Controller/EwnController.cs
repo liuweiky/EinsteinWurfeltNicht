@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,14 +22,14 @@ namespace EinsteinWurfeltNicht.Controller
         public EventHandler chessButtonHandler;
         public Label diceLabel;
         Turn turn;
-        int moveChessNum;
+        public int moveChessNum;
 
         public Label player1Label;
         public Label player2Label;
         public EwnController()
         {
-            turn = Turn.PLAYER1;
-            moveChessNum = 5;
+            turn = Turn.PLAYER2;
+            moveChessNum = DiceUtil.GetChessNum();
             player1 = new AiPlayer();
             player2 = new UserPlayer();
             chessButtonHandler = new System.EventHandler(OnButtonClick);
@@ -115,24 +116,71 @@ namespace EinsteinWurfeltNicht.Controller
             return arrayList;
         }
 
-        public void NextTurn()
+        private void AiTurn()
         {
-            turn = (turn == Turn.PLAYER1) ? Turn.PLAYER2 : Turn.PLAYER1;
             moveChessNum = DiceUtil.GetChessNum();
-            IPlayer p = (turn == Turn.PLAYER1) ? player1 : player2;
+            turn = Turn.PLAYER1;
+            IPlayer p = player1;
+            diceLabel.Text = moveChessNum.ToString();
+            player1Label.Visible = true;
+            player2Label.Visible = false;
 
-            if (p == player1)
+            
+
+            ArrayList candidates = new ArrayList();
+            Minimax mm;
+            int pos;
+
+            Application.DoEvents();
+            //Thread.Sleep(200);
+            if ((p.Chesses[moveChessNum] as Chess).state == ChessState.ALIVE)
+                candidates.Add(moveChessNum);
+            if (candidates.Count != 0)
             {
-                player1Label.Visible = true;
-                player2Label.Visible = false;
-            } else
+                mm = new Minimax(this);
+
+                pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
+                Thread.Sleep(1000);
+                Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
+                MoveTo(pos);
+                return;
+            }
+            int dis = 1;
+            while (candidates.Count == 0 && dis <= 5)
             {
-                player1Label.Visible = false;
-                player2Label.Visible = true;
+                if (moveChessNum + dis <= 5 && (p.Chesses[moveChessNum + dis] as Chess).state == ChessState.ALIVE)
+                    candidates.Add(moveChessNum + dis);
+                if (moveChessNum - dis >= 0 && (p.Chesses[moveChessNum - dis] as Chess).state == ChessState.ALIVE)
+                    candidates.Add(moveChessNum - dis);
+                dis++;
             }
 
-            /*while ((p.Chesses[moveChessNum] as Chess).state == ChessState.ELIMINATED)
-                moveChessNum = DiceUtil.GetChessNum();*/
+            if (candidates.Count == 0)
+            {
+                MessageBox.Show("Player2 Win");
+                return;
+            }
+            
+            moveChessNum = (int)candidates[DiceUtil.GetRandomNum() % candidates.Count];
+            mm = new Minimax(this);
+            pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
+            Thread.Sleep(1000);
+            Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
+            MoveTo(pos);
+
+            return;
+        }
+
+        private void NextTurn()
+        {
+            Thread.Sleep(100);
+            AiTurn();
+            turn = Turn.PLAYER2;
+            moveChessNum = DiceUtil.GetChessNum();
+            IPlayer p = player2;
+
+            player1Label.Visible = false;
+            player2Label.Visible = true;
 
             diceLabel.Text = moveChessNum.ToString();
 
@@ -142,12 +190,6 @@ namespace EinsteinWurfeltNicht.Controller
                 candidates.Add(moveChessNum);
             if (candidates.Count != 0)
             {
-                if (p == player1)
-                {
-                    Minimax mm = new Minimax(this);
-                    int pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
-                    Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
-                }
                 return;
             }
             int dis = 1;
@@ -177,12 +219,6 @@ namespace EinsteinWurfeltNicht.Controller
                 MessageBox.Show("Can only move " + (int)candidates[0] + ".");
                 moveChessNum = (int)candidates[0];
             }
-            if (p == player1)
-            {
-                Minimax mm = new Minimax(this);
-                int pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
-                Console.WriteLine((pos / ChessBoardView.CHESS_BOARD_SIZE).ToString() + ", " + (pos % ChessBoardView.CHESS_BOARD_SIZE).ToString());
-            }
         }
 
         public bool MoveTo(int posId)
@@ -199,14 +235,14 @@ namespace EinsteinWurfeltNicht.Controller
                 if ((p.Chesses[i] as Chess).posId == posId)
                 {
                     p.SetChessEliminated(i);
-                    break;
+                    //break;
                 }
 
             for (int i = 0; i < tp.Chesses.Count; i++)
                 if ((tp.Chesses[i] as Chess).posId == posId)
                 {
                     tp.SetChessEliminated(i);
-                    break;
+                    //break;
                 }
 
             p.SetChessPos(moveChessNum, posId);

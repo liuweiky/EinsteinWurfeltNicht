@@ -11,11 +11,16 @@ namespace EinsteinWurfeltNicht.Util
         static Random RANDOM;
         static DiceUtil()
         {
-            RANDOM = new Random(6);
+            int seed = Guid.NewGuid().GetHashCode();
+            RANDOM = new Random(seed);
         }
         public static int GetChessNum()
         {
-            return RANDOM.Next(0, 5);
+            return (RANDOM.Next() % 6);
+        }
+        public static int GetRandomNum()
+        {
+            return RANDOM.Next();
         }
     }
 }

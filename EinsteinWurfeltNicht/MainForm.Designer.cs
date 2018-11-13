@@ -49,7 +49,7 @@
             this.diceLabel.Name = "diceLabel";
             this.diceLabel.Size = new System.Drawing.Size(60, 64);
             this.diceLabel.TabIndex = 1;
-            this.diceLabel.Text = "5";
+            this.diceLabel.Text = "0";
             // 
             // playerLabel1
             // 

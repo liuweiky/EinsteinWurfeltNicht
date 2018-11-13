@@ -25,6 +25,7 @@ namespace EinsteinWurfeltNicht
             chessBoardView = new ChessBoardView(controller, chessPanel.Height, chessPanel.Width);
             mainController.chessBoardView = chessBoardView;
             mainController.diceLabel = diceLabel;
+            diceLabel.Text = mainController.moveChessNum.ToString();
             mainController.player1Label = playerLabel1;
             mainController.player2Label = playerLabel2;
             chessPanel.Controls.Add(chessBoardView);
