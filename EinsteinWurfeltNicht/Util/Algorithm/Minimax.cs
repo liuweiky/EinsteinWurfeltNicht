@@ -225,7 +225,7 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
 
         public double Eval()
         {
-            double good_ai = 0, good_usr = 0, cnt_ai = 0, cnt_usr = 0;
+            double dis_ai = 0, dis_usr = 0, cnt_ai = 0, cnt_usr = 0;
             for (int i = 0; i < ChessBoardView.CHESS_BOARD_SIZE; i++)
             {
                 for (int j = 0; j < ChessBoardView.CHESS_BOARD_SIZE; j++)
@@ -234,7 +234,9 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                     {
                         cnt_usr++;
                         double dis = Math.Sqrt((double) (i * i + j * j));
-                        good_usr += dis;
+                        dis_usr += dis;
+                        // 让 usr 远离中线
+                        dis_usr -= Math.Abs(i - j);
                     }
                     if (chessBoard[i, j] == ChessOwner.PLAYER1)
                     {
@@ -242,12 +244,14 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                         double dis = Math.Sqrt(
                             (ChessBoardView.CHESS_BOARD_SIZE - i) * (ChessBoardView.CHESS_BOARD_SIZE - i) 
                             + (ChessBoardView.CHESS_BOARD_SIZE - j) * (ChessBoardView.CHESS_BOARD_SIZE - j));
-                        good_ai += dis;
+                        dis_ai += dis;
+                        // ai 尽量靠近中线
+                        dis_ai += Math.Abs(i - j) * 2;
                     }
                 }
             }
-            double ai_avg = cnt_ai == 0 ? int.MaxValue : good_ai / cnt_ai;
-            double usr_avg = cnt_usr == 0 ? int.MaxValue : good_usr / cnt_usr;
+            double ai_avg = cnt_ai == 0 ? int.MaxValue : dis_ai / cnt_ai;
+            double usr_avg = cnt_usr == 0 ? int.MaxValue : dis_usr / cnt_usr;
             //Console.WriteLine(dis);
             return ((usr_avg - ai_avg) * 10 + (cnt_ai - cnt_usr) * 5);
         }
