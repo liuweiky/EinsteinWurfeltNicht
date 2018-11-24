@@ -175,6 +175,11 @@ namespace EinsteinWurfeltNicht.Controller
         {
             Thread.Sleep(100);
             AiTurn();
+            if (chessBoardView.chessBoardHash[ChessBoardView.CHESS_BOARD_SIZE - 1, ChessBoardView.CHESS_BOARD_SIZE - 1] == ChessOwner.PLAYER1)
+            {
+                MessageBox.Show("Player1 Win");
+                return;
+            }
             turn = Turn.PLAYER2;
             moveChessNum = DiceUtil.GetChessNum();
             IPlayer p = player2;
@@ -246,6 +251,10 @@ namespace EinsteinWurfeltNicht.Controller
                 }
 
             p.SetChessPos(moveChessNum, posId);
+            if (chessBoardView.chessBoardHash[0, 0] == ChessOwner.PLAYER2)
+            {
+                MessageBox.Show("Player2 Win");
+            }
             return true;
         }
 
