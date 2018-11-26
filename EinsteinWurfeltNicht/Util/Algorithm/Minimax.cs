@@ -31,24 +31,40 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
             }
         }
 
+        private void PrintHash()
+        {
+            Console.WriteLine();
+            for (int i = 0; i < ChessBoardView.CHESS_BOARD_SIZE; i++)
+            {
+                for (int j = 0; j < ChessBoardView.CHESS_BOARD_SIZE; j++)
+                {
+                    Console.Write(chessBoard[i, j] + " ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+
         public int Calc(int curAiPos)
         {
-            Console.WriteLine("Eval" + Eval());
+            //PrintHash();
+            //Console.WriteLine("Eval" + Eval());
             int m = curAiPos / ChessBoardView.CHESS_BOARD_SIZE;
             int n = curAiPos % ChessBoardView.CHESS_BOARD_SIZE;
 
             double maxx = double.MinValue;
             ChessOwner obk;
-
+            double alpha = double.MinValue;
+            double beta = double.MaxValue;
             int pos = curAiPos;
             if (m < ChessBoardView.CHESS_BOARD_SIZE - 1 && n < ChessBoardView.CHESS_BOARD_SIZE - 1)
             {
                 obk = chessBoard[m + 1, n + 1];
                 chessBoard[m, n] = ChessOwner.EMPTY;
                 chessBoard[m + 1, n + 1] = ChessOwner.PLAYER1;
-                double c = CalPlayer();
+                double c = CalPlayer(alpha, beta);
                 Console.WriteLine(c);
-                if (c > maxx)
+                if (c >= maxx)
                 {
                     maxx = c;
                     pos = (m + 1) * ChessBoardView.CHESS_BOARD_SIZE + n + 1;
@@ -61,7 +77,7 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                 obk = chessBoard[m + 1, n];
                 chessBoard[m, n] = ChessOwner.EMPTY;
                 chessBoard[m + 1, n] = ChessOwner.PLAYER1;
-                double c = CalPlayer();
+                double c = CalPlayer(alpha, beta);
                 Console.WriteLine(c);
                 if (c > maxx)
                 {
@@ -76,7 +92,7 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                 obk = chessBoard[m, n + 1];
                 chessBoard[m, n] = ChessOwner.EMPTY;
                 chessBoard[m, n + 1] = ChessOwner.PLAYER1;
-                double c = CalPlayer();
+                double c = CalPlayer(alpha, beta);
                 Console.WriteLine(c);
                 if (c > maxx)
                 {
@@ -89,18 +105,19 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
             return pos;
         }
 
-        private double CalcAi(int d = 0)
+        private double CalcAi(double alpha, double beta, int d = 0)
         {
+            //PrintHash();
             //Console.WriteLine(d);
 
             if (d >= CalcTime * 0.7 + 5)
                 return Eval();
 
-            double maxx = double.MinValue;
+            //double maxx = double.MinValue;
             if (chessBoard[ChessBoardView.CHESS_BOARD_SIZE - 1, ChessBoardView.CHESS_BOARD_SIZE - 1] == ChessOwner.PLAYER1)
-                return Eval() + 20;
+                return 200 + Eval();
             else if (chessBoard[0, 0] == ChessOwner.PLAYER2)
-                return Eval() - 20;
+                return -200 + Eval();
 
             int cnt1 = 0, cnt2 = 0;
 
@@ -120,9 +137,14 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                             ChessOwner obk = chessBoard[m, n];
                             chessBoard[i, j] = ChessOwner.EMPTY;
                             chessBoard[m, n] = ChessOwner.PLAYER1;
-                            maxx = Math.Max(CalPlayer(d + 1), maxx);
+                            alpha = Math.Max(CalPlayer(alpha, beta, d + 1), alpha);
+
                             chessBoard[m, n] = obk;
                             chessBoard[i, j] = ChessOwner.PLAYER1;
+
+                            if (alpha >= beta)
+                                return alpha;
+
                         }
                     }
                     if (chessBoard[i, j] == ChessOwner.PLAYER2)
@@ -131,24 +153,24 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
             }
 
             if (cnt1 == 0)
-                return Eval();
+                return -200 + Eval();
             if (cnt2 == 0)
-                return Eval();
+                return 200 + Eval();
 
-            return maxx;
+            return alpha;
         }
 
-        private double CalPlayer(int d = 0)
+        private double CalPlayer(double alpha, double beta, int d = 0)
         {
             //Console.WriteLine(d);
 
 
-            double mini = double.MaxValue;
+            //double mini = double.MaxValue;
 
             if (chessBoard[ChessBoardView.CHESS_BOARD_SIZE - 1, ChessBoardView.CHESS_BOARD_SIZE - 1] == ChessOwner.PLAYER1)
-                return Eval() + 20;
+                return 200 + Eval();
             else if (chessBoard[0, 0] == ChessOwner.PLAYER2)
-                return Eval() - 20;
+                return -200 + Eval();
 
             int cnt1 = 0, cnt2 = 0;
 
@@ -168,9 +190,15 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                             ChessOwner obk = chessBoard[m, n];
                             chessBoard[i, j] = ChessOwner.EMPTY;
                             chessBoard[m, n] = ChessOwner.PLAYER2;
-                            mini = Math.Min(CalcAi(d + 1), mini);
+                            beta = Math.Min(CalcAi(alpha, beta, d + 1), beta);
+
                             chessBoard[m, n] = obk;
                             chessBoard[i, j] = ChessOwner.PLAYER2;
+
+                            if (alpha >= beta)
+                                return beta;
+
+                            
                         }
                     }
                     if (chessBoard[i, j] == ChessOwner.PLAYER1)
@@ -178,10 +206,10 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                 }
             }
             if (cnt1 == 0)
-                return Eval();
+                return -200 + Eval();
             if (cnt2 == 0)
-                return Eval();
-            return mini;
+                return 200 + Eval();
+            return beta;
         }
 
         public ArrayList GetMoveRange(Turn turn, int m, int n)
@@ -223,6 +251,37 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
             return arrayList;
         }
 
+        /*public double Eval()
+        {
+            
+            double dis_ai = 0, dis_usr = 0, cnt_ai = 0, cnt_usr = 0;
+            for (int i = 0; i < ChessBoardView.CHESS_BOARD_SIZE; i++)
+            {
+                for (int j = 0; j < ChessBoardView.CHESS_BOARD_SIZE; j++)
+                {
+                    if (chessBoard[i, j] == ChessOwner.PLAYER2)
+                    {
+                        cnt_usr++;
+                        double dis = Math.Max(i, j);
+                        dis_usr += dis;
+                        // 让 usr 远离中线
+                        //dis_usr -= Math.Abs(i - j);
+                    }
+                    if (chessBoard[i, j] == ChessOwner.PLAYER1)
+                    {
+                        cnt_ai++;
+                        double dis = Math.Max(
+                            (ChessBoardView.CHESS_BOARD_SIZE - i - 1) , 
+                            (ChessBoardView.CHESS_BOARD_SIZE - j - 1));
+                        dis_ai += dis;
+                        // ai 尽量靠近中线
+                        //dis_ai += Math.Abs(i - j) * 2;
+                    }
+                }
+            }
+            //Console.WriteLine(dis);
+            return (dis_usr - dis_ai) * 5 + (cnt_ai - cnt_usr) * 3;
+        }*/
         public double Eval()
         {
             double dis_ai = 0, dis_usr = 0, cnt_ai = 0, cnt_usr = 0;
@@ -233,7 +292,7 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                     if (chessBoard[i, j] == ChessOwner.PLAYER2)
                     {
                         cnt_usr++;
-                        double dis = Math.Sqrt((double) (i * i + j * j));
+                        double dis = Math.Sqrt((double)(i * i + j * j));
                         dis_usr += dis;
                         // 让 usr 远离中线
                         dis_usr -= Math.Abs(i - j);
@@ -242,7 +301,7 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                     {
                         cnt_ai++;
                         double dis = Math.Sqrt(
-                            (ChessBoardView.CHESS_BOARD_SIZE - i) * (ChessBoardView.CHESS_BOARD_SIZE - i) 
+                            (ChessBoardView.CHESS_BOARD_SIZE - i) * (ChessBoardView.CHESS_BOARD_SIZE - i)
                             + (ChessBoardView.CHESS_BOARD_SIZE - j) * (ChessBoardView.CHESS_BOARD_SIZE - j));
                         dis_ai += dis;
                         // ai 尽量靠近中线
