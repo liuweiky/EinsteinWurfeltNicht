@@ -145,7 +145,7 @@ namespace EinsteinWurfeltNicht.Controller
                 MoveTo(pos);
                 return;
             }
-            int dis = 1;
+            /*int dis = 1;
             while (candidates.Count == 0 && dis <= 5)
             {
                 if (moveChessNum + dis <= 5 && (p.Chesses[moveChessNum + dis] as Chess).state == ChessState.ALIVE)
@@ -153,6 +153,24 @@ namespace EinsteinWurfeltNicht.Controller
                 if (moveChessNum - dis >= 0 && (p.Chesses[moveChessNum - dis] as Chess).state == ChessState.ALIVE)
                     candidates.Add(moveChessNum - dis);
                 dis++;
+            }*/
+
+            for (int i = moveChessNum + 1; i <= 5; i++)
+            {
+                if ((p.Chesses[i] as Chess).state == ChessState.ALIVE)
+                {
+                    candidates.Add(i);
+                    break;
+                }
+            }
+
+            for (int i = moveChessNum - 1; i >= 0; i--)
+            {
+                if ((p.Chesses[i] as Chess).state == ChessState.ALIVE)
+                {
+                    candidates.Add(i);
+                    break;
+                }
             }
 
             if (candidates.Count == 0)
@@ -160,8 +178,49 @@ namespace EinsteinWurfeltNicht.Controller
                 MessageBox.Show("Player2 Win");
                 return;
             }
-            
-            moveChessNum = (int)candidates[DiceUtil.GetRandomNum() % candidates.Count];
+
+            double bestEval = double.MinValue;
+            int bestMoveNum = (int)candidates[0];
+
+            Console.Write("Candidates: ");
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                Console.Write((int)candidates[i]);
+                Console.Write("\t");
+            }
+            Console.WriteLine();
+                for (int i = 0; i < candidates.Count; i++)
+            {
+                moveChessNum = (int)candidates[i];
+                ArrayList range = GetMoveRange(player1, moveChessNum);
+                int curPos = (p.Chesses[moveChessNum] as Chess).posId;
+
+                int cm = curPos / ChessBoardView.CHESS_BOARD_SIZE;
+                int cn = curPos % ChessBoardView.CHESS_BOARD_SIZE;
+
+                for (int j = 0; j < range.Count; j++)
+                {
+                    int pid = (int)range[j];
+
+                    int pm = pid / ChessBoardView.CHESS_BOARD_SIZE;
+                    int pn = pid % ChessBoardView.CHESS_BOARD_SIZE;
+
+                    ChessOwner obk = chessBoardView.chessBoardHash[pm, pn];
+                    chessBoardView.chessBoardHash[cm, cn] = ChessOwner.EMPTY;
+                    chessBoardView.chessBoardHash[pm, pn] = ChessOwner.PLAYER1;
+                    mm = new Minimax(this);
+                    if (bestEval < mm.Eval())
+                    {
+                        bestEval = mm.Eval();
+                        bestMoveNum = moveChessNum;
+                    }
+                    chessBoardView.chessBoardHash[pm, pn] = obk;
+                    chessBoardView.chessBoardHash[cm, cn] = ChessOwner.PLAYER1;
+                }
+                
+            }
+
+            moveChessNum = bestMoveNum;
             mm = new Minimax(this);
             pos = mm.Calc((p.Chesses[moveChessNum] as Chess).posId);
             Thread.Sleep(1000);

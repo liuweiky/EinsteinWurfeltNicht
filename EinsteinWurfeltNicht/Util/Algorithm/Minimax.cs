@@ -336,8 +336,8 @@ namespace EinsteinWurfeltNicht.Util.Algorithm
                 }
             }
             // 计算每个棋子离对角点的平均距离
-            double ai_avg = cnt_ai == 0 ? int.MaxValue : dis_ai / cnt_ai;
-            double usr_avg = cnt_usr == 0 ? int.MaxValue : dis_usr / cnt_usr;
+            double ai_avg = cnt_ai == 0 ? 1000 : dis_ai / cnt_ai;
+            double usr_avg = cnt_usr == 0 ? 1000 : dis_usr / cnt_usr;
             //Console.WriteLine(dis);
             // 平均距离和剩余棋子数对收益的影响 2:1
             return ((usr_avg - ai_avg) * 10 + (cnt_ai - cnt_usr) * 5);
