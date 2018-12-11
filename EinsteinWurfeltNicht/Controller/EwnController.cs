@@ -232,6 +232,11 @@ namespace EinsteinWurfeltNicht.Controller
 
         private void NextTurn()
         {
+            if (chessBoardView.chessBoardHash[0, 0] == ChessOwner.PLAYER2)
+            {
+                MessageBox.Show("Player2 Win");
+                return;
+            }
             Thread.Sleep(100);
             AiTurn();
             if (chessBoardView.chessBoardHash[ChessBoardView.CHESS_BOARD_SIZE - 1, ChessBoardView.CHESS_BOARD_SIZE - 1] == ChessOwner.PLAYER1)
