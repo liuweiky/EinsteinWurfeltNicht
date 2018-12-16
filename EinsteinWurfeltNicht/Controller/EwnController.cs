@@ -261,7 +261,7 @@ namespace EinsteinWurfeltNicht.Controller
             {
                 return;
             }
-            int dis = 1;
+            /*int dis = 1;
             while (candidates.Count == 0 && dis <= 5)
             {
                 if (moveChessNum + dis <= 5 && (p.Chesses[moveChessNum + dis] as Chess).state == ChessState.ALIVE)
@@ -269,6 +269,24 @@ namespace EinsteinWurfeltNicht.Controller
                 if (moveChessNum - dis >= 0 && (p.Chesses[moveChessNum - dis] as Chess).state == ChessState.ALIVE)
                     candidates.Add(moveChessNum - dis);
                 dis++;
+            }*/
+
+            for (int i = moveChessNum + 1; i <= 5; i++)
+            {
+                if ((p.Chesses[i] as Chess).state == ChessState.ALIVE)
+                {
+                    candidates.Add(i);
+                    break;
+                }
+            }
+
+            for (int i = moveChessNum - 1; i >= 0; i--)
+            {
+                if ((p.Chesses[i] as Chess).state == ChessState.ALIVE)
+                {
+                    candidates.Add(i);
+                    break;
+                }
             }
 
             if (candidates.Count == 0)
